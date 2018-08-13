@@ -32,7 +32,7 @@
     "apollo-link": "^1.2.2",
     "apollo-link-ws": "^1.0.8",
     "core-js": "^2.5.4",
-    "fun-with-ml-schema": "file:../fun-with-ml-schema",
+    "fun-with-ml-schema": "^1.0.0",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "rxjs": "^6.0.0",
