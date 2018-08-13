@@ -79,6 +79,20 @@ export class AppComponent {
   }
 
   public onClickTrainButton() {
+    const { name, urls } = this.model;
+
+    if (urls.indexOf(this.url) >= 0) {
+      const response = confirm(
+        `Model ${name} has already been trained on ${
+          this.url
+        }. Would you like to continue?`
+      );
+
+      if (!response) {
+        return;
+      }
+    }
+
     this.model = { ...this.model, urls: this.model.urls.concat(this.url) };
 
     this.subscriptions.push(
