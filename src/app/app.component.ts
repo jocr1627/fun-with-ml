@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Model, TrainingJob } from 'fun-with-ml-schema';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { filter, flatMap, map } from 'rxjs/operators';
-import { DropdownValueAccessors } from './components';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { filter, flatMap } from 'rxjs/operators';
+import { DropdownValueAccessors, InputType } from './components';
 import { ModelService } from './services';
 
 @Component({
@@ -15,16 +15,23 @@ export class AppComponent {
     name: string;
     series: { name: string; value: number }[];
   }[] = [{ name: 'Loss', series: [] }];
+  public count: number = 1;
+  public epochs: number = 1;
   public error: string = null;
   public generatedText: string[] = [];
+  public InputType = InputType;
+  public maxLength: number = 100;
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
     text: model => model && model.name
   };
   public modelName: string = null;
   public models: Model[] = [];
+  public prefix: string = '';
+  public selector: string = 'body';
+  public temperature: number = 0.5;
   public trainingJob: TrainingJob = null;
-  public url: string = null;
+  public url: string = 'https://en.wikipedia.org/wiki/Structured_prediction';
 
   private $model: BehaviorSubject<Model> = new BehaviorSubject(null);
   private subscriptions: Subscription[] = [];
@@ -75,7 +82,13 @@ export class AppComponent {
   public onClickGenerateButton() {
     this.subscriptions.push(
       this.modelService
-        .generateTextFromModel({ count: 10, id: this.model.id, maxLength: 100 })
+        .generateTextFromModel({
+          count: this.count,
+          id: this.model.id,
+          maxLength: this.maxLength,
+          prefix: this.prefix,
+          temperature: this.temperature
+        })
         .subscribe(
           result =>
             (this.generatedText = result.data
@@ -105,26 +118,35 @@ export class AppComponent {
       this.model = { ...this.model, urls: this.model.urls.concat(this.url) };
     }
 
+    this.chartData = [];
+
     this.subscriptions.push(
       this.modelService
         .trainModel({
+          epochs: this.epochs,
           force: true,
           id: this.model.id,
+          selectors: [this.selector],
           url: this.url
         })
         .subscribe(result => {
           this.trainingJob = result.data;
 
-          if (result.data && result.data.batch !== null) {
-            this.chartData = [
-              {
-                name: 'Loss',
-                series: this.chartData[0].series.concat({
-                  name: result.data.batch.toString(),
-                  value: result.data.loss
-                })
-              }
-            ];
+          const { batch = null, epoch = null, loss = null } =
+            this.trainingJob || {};
+
+          if (batch !== null && epoch !== null) {
+            const entry = this.chartData[epoch];
+            const series = entry ? entry.series : [];
+
+            this.chartData = [...this.chartData];
+            this.chartData[epoch] = {
+              name: `Epoch ${epoch}`,
+              series: series.concat({
+                name: batch.toString(),
+                value: loss
+              })
+            };
           }
         })
     );

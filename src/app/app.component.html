@@ -10,7 +10,7 @@
   <div class="content-container">
     <div class="content-area">
       <div class="content content-row">
-        <div class="content-col">
+        <div class="content-col left-panel">
           <div class="form-section">
             <div class="form-col">
               <label>Model</label>
@@ -25,10 +25,18 @@
           <div class="form-section url-list">
             <div class="form-col">
               <label>Url</label>
-              <div class="form-row">
-                <input-cmp [disabled]="trainingJob" placeholder="Url" [(value)]="url"></input-cmp>
-                <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
-              </div>
+              <input-cmp [disabled]="trainingJob" placeholder="Url" [(value)]="url"></input-cmp>
+            </div>
+            <div class="form-col">
+              <label>Epochs</label>
+              <input-cmp [disabled]="trainingJob" placeholder="Epochs" [type]="InputType.Number" [(value)]="epochs"></input-cmp>
+            </div>
+            <div class="form-col">
+              <label>CSS Selector</label>
+              <input-cmp [disabled]="trainingJob" placeholder="CSS Selector" [(value)]="selector"></input-cmp>
+            </div>
+            <div class="form-col">
+              <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
             </div>
             <ul class="list-group list-group-flush">
               <li *ngFor="let url of model && model.urls" class="list-group-item">{{ url }}</li>
@@ -36,9 +44,29 @@
           </div>
         </div>
 
-        <div class="content-col left-panel">
+        <div class="content-col right-panel">
           <line-chart [data]="chartData"></line-chart>
-          <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
+          <div class="form-section">
+            <div class="form-row">
+              <div class="form-col">
+                <label>Count</label>
+                <input-cmp [disabled]="trainingJob" placeholder="Count" [type]="InputType.Number" [(value)]="count"></input-cmp>
+              </div>
+              <div class="form-col">
+                <label>Max Length</label>
+                <input-cmp [disabled]="trainingJob" placeholder="Max Length" [type]="InputType.Number" [(value)]="maxLength"></input-cmp>
+              </div>
+              <div class="form-col">
+                <label>Prefix</label>
+                <input-cmp [disabled]="trainingJob" placeholder="Prefix" [(value)]="prefix"></input-cmp>
+              </div>
+              <div class="form-col">
+                <label>Temperature</label>
+                <input-cmp [disabled]="trainingJob" placeholder="Temperature" [type]="InputType.Number" [(value)]="temperature"></input-cmp>
+              </div>
+            </div>
+            <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
+          </div>
           <div class="text-box">
             <ng-container *ngFor="let text of generatedText">
               {{ text }}
