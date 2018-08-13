@@ -1,0 +1,20 @@
+button {
+  min-width: 8rem;
+
+  &.btn {
+    text-transform: none;
+  }
+
+  &:active,
+  &:focus {
+    &.btn {
+      box-shadow: none;
+    }
+
+    outline: none;
+  }
+}
+
+clr-dropdown-menu {
+  min-width: 8rem;
+}

@@ -8,6 +8,8 @@
     </div>
   </header>
   <div class="content-container">
-    <div class="content-area"></div>
+    <div class="content-area">
+      <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="$models | async"></dropdown>
+    </div>
   </div>
 </div>

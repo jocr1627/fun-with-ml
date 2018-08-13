@@ -1,0 +1,9 @@
+<clr-dropdown>
+  <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+    {{ getText(selectedValue) }}
+    <clr-icon shape="caret down"></clr-icon>
+  </button>
+  <clr-dropdown-menu *clrIfOpen>
+    <button *ngFor="let value of values" (click)="select(value)" type="button" clrDropdownItem>{{ getText(value) }}</button>
+  </clr-dropdown-menu>
+</clr-dropdown>
