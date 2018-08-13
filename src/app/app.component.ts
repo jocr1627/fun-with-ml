@@ -79,6 +79,8 @@ export class AppComponent {
   }
 
   public onClickTrainButton() {
+    this.model = { ...this.model, urls: this.model.urls.concat(this.url) };
+
     this.subscriptions.push(
       this.modelService
         .trainModel({
