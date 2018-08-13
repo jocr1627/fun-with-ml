@@ -9,23 +9,44 @@
   </header>
   <div class="content-container">
     <div class="content-area">
-      <dropdown [accessors]="modelAccessors" [disabled]="trainingJob" [(selectedValue)]="model" [values]="models"></dropdown>
-      <div>
-        <input-cmp [disabled]="trainingJob" [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
-        <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName || trainingJob" iconShape="plus" label="Create New"></button-cmp>
+      <div class="content content-row">
+        <div class="content-col">
+          <div class="form-section">
+            <div class="form-col">
+              <label>Model</label>
+              <dropdown [accessors]="modelAccessors" [disabled]="trainingJob" [(selectedValue)]="model" [values]="models"></dropdown>
+            </div>
+            <div class="form-row">
+              <input-cmp [disabled]="trainingJob" [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
+              <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName || trainingJob" iconShape="plus" label="Add New"></button-cmp>
+            </div>
+          </div>
+
+          <div class="form-section url-list">
+            <div class="form-col">
+              <label>Url</label>
+              <div class="form-row">
+                <input-cmp [disabled]="trainingJob" placeholder="Url" [(value)]="url"></input-cmp>
+                <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
+              </div>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let url of model && model.urls" class="list-group-item">{{ url }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="content-col left-panel">
+          <line-chart [data]="chartData"></line-chart>
+          <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
+          <div class="text-box">
+            <ng-container *ngFor="let text of generatedText">
+              {{ text }}
+              <br/>
+            </ng-container>
+          </div>
+        </div>
       </div>
-      <div>
-        <input-cmp [disabled]="trainingJob" placeholder="Url" [(value)]="url"></input-cmp>
-        <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
-      </div>
-      <div>
-        <textarea clrTextarea class="textarea" [ngModel]="$generatedText | async" readonly></textarea>
-        <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
-      </div>
-      <ul class="list-group list-group-flush">
-        <li *ngFor="let url of model && model.urls" class="list-group-item">{{ url }}</li>
-      </ul>
-      <line-chart [data]="chartData"></line-chart>
     </div>
   </div>
 </div>

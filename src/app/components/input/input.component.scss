@@ -1,12 +1,14 @@
 :host {
   display: flex;
   flex-direction: column;
-  width: 6.5rem;
+  width: 8rem;
 
   .error {
     color: #c92100;
     font-size: 0.5rem;
     height: 0.5rem;
+    margin-top: 1.5rem;
+    position: absolute;
   }
 
   .input-container {
@@ -15,10 +17,9 @@
     border: solid 0.05rem #ccc;
     border-radius: 0.12rem;
     display: flex;
-    flex: 1;
     height: 1.5rem;
 
-    &.error {
+    &.has-error {
       border-color: #c92100;
     }
 

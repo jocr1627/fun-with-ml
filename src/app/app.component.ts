@@ -11,12 +11,12 @@ import { ModelService } from './services';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  public $generatedText: Observable<string> = null;
   public chartData: {
     name: string;
     series: { name: string; value: number }[];
   }[] = [{ name: 'Loss', series: [] }];
   public error: string = null;
+  public generatedText: string[] = [];
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
     text: model => model && model.name
@@ -73,15 +73,23 @@ export class AppComponent {
   }
 
   public onClickGenerateButton() {
-    this.$generatedText = this.modelService
-      .generateTextFromModel({ count: 10, id: this.model.id, maxLength: 100 })
-      .pipe(map(result => result.data && result.data.text.join('\n\n')));
+    this.subscriptions.push(
+      this.modelService
+        .generateTextFromModel({ count: 10, id: this.model.id, maxLength: 100 })
+        .subscribe(
+          result =>
+            (this.generatedText = result.data
+              ? result.data.text
+              : this.generatedText)
+        )
+    );
   }
 
   public onClickTrainButton() {
     const { name, urls } = this.model;
+    const hasUrl = urls.indexOf(this.url) >= 0;
 
-    if (urls.indexOf(this.url) >= 0) {
+    if (hasUrl) {
       const response = confirm(
         `Model ${name} has already been trained on ${
           this.url
@@ -93,7 +101,9 @@ export class AppComponent {
       }
     }
 
-    this.model = { ...this.model, urls: this.model.urls.concat(this.url) };
+    if (!hasUrl) {
+      this.model = { ...this.model, urls: this.model.urls.concat(this.url) };
+    }
 
     this.subscriptions.push(
       this.modelService

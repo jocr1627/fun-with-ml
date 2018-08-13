@@ -11,6 +11,4 @@ export class LineChartComponent<T> {
     name: string;
     series: { name: string; value: number }[];
   }[] = [];
-
-  public view: [number, number] = [700, 400];
 }
