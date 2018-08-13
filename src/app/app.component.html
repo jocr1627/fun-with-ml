@@ -17,8 +17,8 @@
               <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" (selectedValueChange)="onChangeModel()" [values]="models"></dropdown>
             </div>
             <div class="form-row">
-              <input-cmp [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
-              <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName" iconShape="plus" label="Add New"></button-cmp>
+              <input-cmp [error]="nameError" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
+              <button-cmp (click)="onClickCreateNewButton()" [disabled]="nameError || !modelName" iconShape="plus" label="Add New"></button-cmp>
             </div>
           </div>
 
@@ -36,8 +36,7 @@
               <input-cmp placeholder="CSS Selector" [(value)]="selector"></input-cmp>
             </div>
             <div class="form-col">
-              <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || (trainingJob && trainingJob.status != JobStatus.DONE)"
-                label="Train"></button-cmp>
+              <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || isJobInProgress(trainingJob)" label="Train"></button-cmp>
             </div>
             <div class="url-list">
               <div *ngFor="let url of model && model.urls" class="url">{{ url }}</div>
@@ -47,7 +46,7 @@
 
         <div class="content-col right-panel">
           <div class="content-section line-chart">
-            <div *ngIf="trainingJob && trainingJob.status == JobStatus.PENDING" class="spinner-container">
+            <div *ngIf="isJobPending(trainingJob)" class="spinner-container">
               <div class="spinner"></div>
             </div>
             <line-chart *ngIf="!trainingJob || trainingJob.status != JobStatus.PENDING" [data]="chartData"></line-chart>
@@ -71,14 +70,13 @@
                 <input-cmp placeholder="Temperature" [type]="InputType.Number" [(value)]="temperature"></input-cmp>
               </div>
             </div>
-            <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || (generateJob && generateJob.status != JobStatus.DONE)"
-              label="Generate"></button-cmp>
+            <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || isJobInProgress(generateJob)" label="Generate"></button-cmp>
           </div>
           <div class="content-section text-box">
-            <div *ngIf="generateJob && generateJob.status == JobStatus.PENDING" class="spinner-container">
+            <div *ngIf="isJobPending(generateJob)" class="spinner-container">
               <div class="spinner"></div>
             </div>
-            <ng-container *ngIf="!generateJob || generateJob.status != JobStatus.PENDING">
+            <ng-container *ngIf="!isJobPending(generateJob)">
               <ng-container *ngFor="let text of generatedText">
                 {{ text }}
                 <br/>

@@ -5,6 +5,7 @@ export const BatchCompletedTag = gql(`
     batchCompleted {
       batch
       epoch
+      errors
       id
       loss
       status
@@ -25,6 +26,7 @@ export const CreateModelTag = gql(`
 export const GenerateJobTag = gql(`
   query GenerateJob($input: GenerateJobInput!) {
     generateJob(input: $input) {
+      errors
       id
       status
       text
@@ -35,6 +37,7 @@ export const GenerateJobTag = gql(`
 export const GenerateTextFromModelTag = gql(`
   mutation GenerateTextFromModel($input: GenerateTextFromModelInput!) {
     generateTextFromModel(input: $input) {
+      errors
       id
       status
       text
@@ -77,6 +80,7 @@ export const TrainingJobTag = gql(`
     trainingJob(input: $input) {
       batch
       epoch
+      errors
       id
       loss
       status
@@ -89,6 +93,7 @@ export const TrainModelTag = gql(`
     trainModel(input: $input) {
       batch
       epoch
+      errors
       id
       loss
       status

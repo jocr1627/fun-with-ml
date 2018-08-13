@@ -12,6 +12,7 @@ import { split } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { OperationDefinitionNode } from 'graphql';
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import {
   ButtonModule,
@@ -42,12 +43,13 @@ import {
 })
 export class AppModule {
   constructor(apollo: Apollo, httpLink: HttpLink) {
+    const { apiUri, subscriptionsUri } = environment;
     const http = httpLink.create({
-      uri: 'http://localhost:4000'
+      uri: apiUri
     });
 
     const ws = new WebSocketLink({
-      uri: `ws://localhost:4000/graphql`,
+      uri: subscriptionsUri,
       options: {
         reconnect: true
       }

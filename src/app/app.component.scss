@@ -23,9 +23,6 @@
   background-color: white;
   border: 0.05rem solid #cccccc;
   border-radius: 0.15rem;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
   padding: 0.5rem;
 
   & > * {
@@ -64,11 +61,12 @@ label {
 }
 
 .left-panel {
+  min-height: 35rem;
   width: 16rem;
 }
 
 .line-chart {
-  height: 15rem;
+  height: 17.5rem;
 }
 
 .right-panel {
@@ -79,12 +77,12 @@ label {
   align-items: center;
   display: flex;
   flex: 1;
+  height: 100%;
   justify-content: center;
 }
 
 .textarea {
   cursor: default;
-  height: 20rem;
 
   &:focus {
     box-shadow: none;
@@ -93,11 +91,13 @@ label {
 }
 
 .text-box {
-  height: 15rem;
+  flex: 0 0 10.3rem;
 }
 
 .url-list-container {
+  display: flex;
   flex: 1;
+  flex-direction: column;
 
   .url-list {
     flex: 1;
@@ -108,7 +108,7 @@ label {
     .url {
       align-items: center;
       display: flex;
-      height: 1.5rem;
+      min-height: 1.5rem;
 
       &:not(:last-of-type) {
         border-bottom: 0.05rem solid #ccc;

@@ -18,11 +18,9 @@ export class AppComponent {
   }[] = [];
   public count: number = 1;
   public epochs: number = 1;
-  public error: string = null;
   public generateJob: GenerateJob = null;
   public generatedText: string[] = [];
   public InputType = InputType;
-  public isJobInProgress: boolean = false;
   public JobStatus = JobStatus;
   public maxLength: number = 100;
   public model: Model = null;
@@ -31,6 +29,7 @@ export class AppComponent {
   };
   public modelName: string = null;
   public models: Model[] = [];
+  public nameError: string = null;
   public prefix: string = '';
   public selector: string = 'body';
   public temperature: number = 0.5;
@@ -65,7 +64,7 @@ export class AppComponent {
         this.models = result.data;
 
         if (!this.model && this.models.length > 0) {
-          this.model = this.models[0];
+          this.$modelId.next(this.models[0].id);
         }
       })
     );
@@ -93,9 +92,7 @@ export class AppComponent {
             return;
           }
 
-          const { batch, epoch, loss, status } = result.data;
-
-          this.isJobInProgress = status !== JobStatus.DONE;
+          const { batch, epoch, errors, loss, status } = result.data;
 
           if (status === JobStatus.ACTIVE) {
             const entry = this.chartData[epoch];
@@ -127,15 +124,25 @@ export class AppComponent {
             return;
           }
 
-          const { status, text } = result.data;
+          const { text } = result.data;
 
-          this.isJobInProgress = status !== JobStatus.DONE;
           this.generatedText = text;
         })
     );
   }
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  public isJobPending(job: GenerateJob | TrainingJob): boolean {
+    return job && job.status === JobStatus.PENDING;
+  }
+
+  public isJobInProgress(job: GenerateJob | TrainingJob): boolean {
+    return (
+      job &&
+      (job.status === JobStatus.ACTIVE || job.status === JobStatus.PENDING)
+    );
   }
 
   public onChangeModel() {
@@ -146,9 +153,9 @@ export class AppComponent {
     const modelNames = this.models.map(model => model.name);
 
     if (modelNames.indexOf(this.modelName) >= 0) {
-      this.error = 'Name already exists!';
+      this.nameError = 'Name already exists!';
     } else {
-      this.error = null;
+      this.nameError = null;
     }
   }
 
@@ -163,8 +170,6 @@ export class AppComponent {
   }
 
   public onClickGenerateButton() {
-    this.isJobInProgress = true;
-
     this.subscriptions.push(
       this.modelService
         .generateTextFromModel({
@@ -199,7 +204,6 @@ export class AppComponent {
     }
 
     this.chartData = [];
-    this.isJobInProgress = true;
 
     this.subscriptions.push(
       this.modelService
