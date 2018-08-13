@@ -10,6 +10,8 @@
   <div class="content-container">
     <div class="content-area">
       <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="$models | async"></dropdown>
+      <input clrInput placeholder="Model name" [(ngModel)]="modelName" />
+      <button-cmp (click)="onClickCreateModel()" [disabled]="!modelName" iconShape="plus" label="Create Model"></button-cmp>
     </div>
   </div>
 </div>

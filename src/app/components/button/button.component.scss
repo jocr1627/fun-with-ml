@@ -1,0 +1,11 @@
+:host {
+  .btn {
+    &:active {
+      background-color: #004a70;
+    }
+
+    &:hover:not(:active):not(:disabled) {
+      background-color: #007cbb;
+    }
+  }
+}
