@@ -61,9 +61,13 @@ export class AppComponent {
     );
 
     this.subscriptions.push(
-      this.modelService
-        .models()
-        .subscribe(result => (this.models = result.data))
+      this.modelService.models().subscribe(result => {
+        this.models = result.data;
+
+        if (!this.model && this.models.length > 0) {
+          this.model = this.models[0];
+        }
+      })
     );
 
     this.subscriptions.push(
