@@ -15,11 +15,11 @@
         <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName || trainingJob" iconShape="plus" label="Create New"></button-cmp>
       </div>
       <div>
-        <input clrInput [disabled]="trainingJob" placeholder="Url" [(ngModel)]="url" />
+        <input-cmp [disabled]="trainingJob" placeholder="Url" [(value)]="url"></input-cmp>
         <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
       </div>
       <div>
-        <textarea clrTextarea [ngModel]="$generatedText | async" readonly></textarea>
+        <textarea clrTextarea class="textarea" [ngModel]="$generatedText | async" readonly></textarea>
         <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
       </div>
       <ul class="list-group list-group-flush">

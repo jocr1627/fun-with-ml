@@ -3,6 +3,12 @@
   flex-direction: column;
 }
 
-textarea {
+.textarea {
+  cursor: default;
   height: 20rem;
+
+  &:focus {
+    box-shadow: none;
+    outline: 0;
+  }
 }

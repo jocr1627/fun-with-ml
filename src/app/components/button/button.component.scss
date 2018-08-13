@@ -4,6 +4,10 @@
       background-color: #004a70;
     }
 
+    &:focus {
+      outline: none;
+    }
+
     &:hover:not(:active):not(:disabled) {
       background-color: #007cbb;
     }

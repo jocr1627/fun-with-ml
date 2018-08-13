@@ -2,6 +2,10 @@ button {
   min-width: 8rem;
 
   &.btn {
+    background-color: white;
+    border-color: #ccc;
+    color: black;
+    text-align: left;
     text-transform: none;
   }
 
@@ -10,6 +14,8 @@ button {
     &.btn {
       box-shadow: none;
     }
+
+    outline: none;
   }
 
   &.disabled {
