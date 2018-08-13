@@ -10,6 +10,24 @@ export const CreateModelTag = gql(`
   }
 `);
 
+export const GenerateJobTag = gql(`
+  query GenerateJob($input: GenerateJobInput!) {
+    generateJob(input: $input) {
+      id
+      text
+    }
+  }
+`);
+
+export const GenerateTextFromModelTag = gql(`
+  subscription GenerateTextFromModel($input: GenerateTextFromModelInput!) {
+    generateTextFromModel(input: $input) {
+      id
+      text
+    }
+  }
+`);
+
 export const ModelTag = gql(`
   query Model($input: ModelInput!) {
     model(input: $input) {

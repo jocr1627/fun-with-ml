@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Model, TrainingJob } from 'fun-with-ml-schema';
+import { GenerateJob, Model, TrainingJob } from 'fun-with-ml-schema';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DropdownValueAccessors } from './components';
@@ -11,6 +11,7 @@ import { ModelService } from './services';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  public $generatedText: Observable<string> = null;
   public $models: Observable<Model[]> = null;
   public $trainingJob: Observable<TrainingJob> = null;
   public model: Model = null;
@@ -38,6 +39,14 @@ export class AppComponent {
           this.model = result.data;
         })
     );
+
+    this.modelName = null;
+  }
+
+  public onClickGenerateButton() {
+    this.$generatedText = this.modelService
+      .generateTextFromModel({ count: 10, id: this.model.id, maxLength: 100 })
+      .pipe(map(result => result.data && result.data.text.join('\n\n')));
   }
 
   public onClickTrainButton() {

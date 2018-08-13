@@ -10,10 +10,18 @@
   <div class="content-container">
     <div class="content-area">
       <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="$models | async"></dropdown>
-      <input clrInput placeholder="Model name" [(ngModel)]="modelName" />
-      <button-cmp (click)="onClickCreateNewButton()" [disabled]="!modelName" iconShape="plus" label="Create New"></button-cmp>
-      <input clrInput placeholder="Url" [(ngModel)]="url" />
-      <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url" label="Train"></button-cmp>
+      <div>
+        <input clrInput placeholder="Model name" [(ngModel)]="modelName" />
+        <button-cmp (click)="onClickCreateNewButton()" [disabled]="!modelName" iconShape="plus" label="Create New"></button-cmp>
+      </div>
+      <div>
+        <input clrInput placeholder="Url" [(ngModel)]="url" />
+        <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url" label="Train"></button-cmp>
+      </div>
+      <div>
+        <textarea clrTextarea [ngModel]="$generatedText | async" readonly></textarea>
+        <button-cmp (click)="onClickGenerateButton()" [disabled]="!model" label="Generate"></button-cmp>
+      </div>
     </div>
   </div>
 </div>

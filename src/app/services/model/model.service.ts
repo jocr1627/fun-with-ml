@@ -3,10 +3,11 @@ import { Apollo } from 'apollo-angular';
 import { ApolloQueryResult } from 'apollo-client';
 import {
   CreateModelInput,
+  GenerateJob,
+  GenerateTextFromModelInput,
   Model,
   ModelInput,
   TrainingJob,
-  TrainingJobInput,
   TrainModelInput
 } from 'fun-with-ml-schema';
 import { Observable } from 'rxjs';
@@ -14,6 +15,8 @@ import { map } from 'rxjs/operators';
 import { TypedFetchResult } from '../typed-fetch-result';
 import {
   CreateModelTag,
+  GenerateJobTag,
+  GenerateTextFromModelTag,
   ModelTag,
   ModelsTag,
   TrainingJobTag,
@@ -43,6 +46,40 @@ export class ModelService {
           return { ...result, data: models };
         })
       );
+  }
+
+  public generateTextFromModel(
+    input: GenerateTextFromModelInput
+  ): Observable<ApolloQueryResult<GenerateJob>> {
+    const queryRef = this.apollo.watchQuery({
+      query: GenerateJobTag,
+      variables: { input: { id: input.id } }
+    });
+
+    queryRef.subscribeToMore({
+      document: GenerateTextFromModelTag,
+      variables: { input },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) {
+          return prev;
+        }
+
+        const generateJob = subscriptionData.data.generateTextFromModel;
+
+        return {
+          generateJob
+        };
+      }
+    });
+
+    return queryRef.valueChanges.pipe(
+      map(result => {
+        const { data } = result;
+        const { generateJob } = data as any;
+
+        return { ...result, data: generateJob };
+      })
+    );
   }
 
   public model(input: ModelInput): Observable<ApolloQueryResult<Model>> {
@@ -88,7 +125,6 @@ export class ModelService {
       document: TrainModelTag,
       variables: { input },
       updateQuery: (prev, { subscriptionData }) => {
-        console.log(prev, subscriptionData);
         if (!subscriptionData.data) {
           return prev;
         }
