@@ -3,6 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClarityModule } from '@clr/angular';
 import { Apollo, ApolloModule } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
@@ -12,12 +13,13 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { OperationDefinitionNode } from 'graphql';
 import { AppComponent } from './app.component';
-import { ButtonModule, DropdownModule } from './components';
+import { ButtonModule, DropdownModule, LineChartModule } from './components';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     ApolloModule,
+    BrowserAnimationsModule,
     BrowserModule,
     ButtonModule,
     ClarityModule,
@@ -25,7 +27,8 @@ import { ButtonModule, DropdownModule } from './components';
     DropdownModule,
     FormsModule,
     HttpClientModule,
-    HttpLinkModule
+    HttpLinkModule,
+    LineChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]

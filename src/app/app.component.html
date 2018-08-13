@@ -22,6 +22,10 @@
         <textarea clrTextarea [ngModel]="$generatedText | async" readonly></textarea>
         <button-cmp (click)="onClickGenerateButton()" [disabled]="!model" label="Generate"></button-cmp>
       </div>
+      <ul class="list-group list-group-flush">
+        <li *ngFor="let url of $urls" class="list-group-item">{{ url }}</li>
+      </ul>
+      <line-chart [data]="chartData"></line-chart>
     </div>
   </div>
 </div>
