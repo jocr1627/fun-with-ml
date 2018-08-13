@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ApolloQueryResult } from 'apollo-client';
-import { JobStatus, Model } from 'fun-with-ml-schema';
+import { GenerateJob, JobStatus, Model, TrainingJob } from 'fun-with-ml-schema';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { DropdownValueAccessors, InputType } from './components';
@@ -19,9 +19,11 @@ export class AppComponent {
   public count: number = 1;
   public epochs: number = 1;
   public error: string = null;
+  public generateJob: GenerateJob = null;
   public generatedText: string[] = [];
   public InputType = InputType;
   public isJobInProgress: boolean = false;
+  public JobStatus = JobStatus;
   public maxLength: number = 100;
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
@@ -32,6 +34,7 @@ export class AppComponent {
   public prefix: string = '';
   public selector: string = 'body';
   public temperature: number = 0.5;
+  public trainingJob: TrainingJob = null;
   public url: string = 'https://en.wikipedia.org/wiki/Structured_prediction';
 
   private $modelId: BehaviorSubject<string> = new BehaviorSubject(null);
@@ -75,7 +78,13 @@ export class AppComponent {
           })
         )
         .subscribe(result => {
-          if (!result || !result.data) {
+          this.trainingJob = result && result.data;
+
+          if (
+            !result ||
+            !result.data ||
+            result.data.status === JobStatus.PENDING
+          ) {
             this.chartData = [];
             return;
           }
@@ -107,6 +116,8 @@ export class AppComponent {
           })
         )
         .subscribe(result => {
+          this.generateJob = result && result.data;
+
           if (!result || !result.data) {
             this.generatedText = [];
             return;

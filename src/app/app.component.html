@@ -45,8 +45,11 @@
         </div>
 
         <div class="content-col right-panel">
-          <div class="content-section">
-            <line-chart [data]="chartData"></line-chart>
+          <div class="content-section line-chart">
+            <div *ngIf="trainingJob && trainingJob.status == JobStatus.PENDING" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <line-chart *ngIf="!trainingJob || trainingJob.status != JobStatus.PENDING" [data]="chartData"></line-chart>
           </div>
           <div class="content-section">
             <div class="form-row">
@@ -70,9 +73,14 @@
             <button-cmp (click)="onClickGenerateButton()" [disabled]="!model" label="Generate"></button-cmp>
           </div>
           <div class="content-section text-box">
-            <ng-container *ngFor="let text of generatedText">
-              {{ text }}
-              <br/>
+            <div *ngIf="generateJob && generateJob.status == JobStatus.PENDING" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <ng-container *ngIf="!generateJob || generateJob.status != JobStatus.PENDING">
+              <ng-container *ngFor="let text of generatedText">
+                {{ text }}
+                <br/>
+              </ng-container>
             </ng-container>
           </div>
         </div>

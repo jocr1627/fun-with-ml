@@ -67,12 +67,19 @@ label {
   width: 16rem;
 }
 
-line-chart {
+.line-chart {
   height: 15rem;
 }
 
 .right-panel {
   width: 35rem;
+}
+
+.spinner-container {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
 .textarea {
