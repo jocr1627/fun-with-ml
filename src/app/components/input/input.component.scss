@@ -1,0 +1,60 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 6.5rem;
+
+  .error {
+    color: #c92100;
+    font-size: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .input-container {
+    align-items: center;
+    background-color: white;
+    border: solid 0.05rem grey;
+    border-radius: 0.12rem;
+    display: flex;
+    flex: 1;
+    height: 1.5rem;
+
+    &.error {
+      border-color: #c92100;
+    }
+
+    .input {
+      border: none;
+      height: 100%;
+      width: 100%;
+
+      &.input-with-icon {
+        padding-left: 0;
+      }
+
+      &::placeholder {
+        color: #95a0a8;
+      }
+
+      &[type='date']:not([readonly]),
+      &[type='datetime-local']:not([readonly]),
+      &[type='email']:not([readonly]),
+      &[type='number']:not([readonly]),
+      &[type='password']:not([readonly]),
+      &[type='tel']:not([readonly]),
+      &[type='text']:not([readonly]),
+      &[type='time']:not([readonly]),
+      &[type='url']:not([readonly]) {
+        background: none;
+        background-size: none;
+        border: none;
+        transition: none;
+      }
+
+      &[type='number']::-webkit-inner-spin-button,
+      &[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+}

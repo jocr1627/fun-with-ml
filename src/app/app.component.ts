@@ -12,24 +12,23 @@ import { ModelService } from './services';
 })
 export class AppComponent {
   public $generatedText: Observable<string> = null;
-  public $models: Observable<Model[]> = null;
   public chartData: {
     name: string;
     series: { name: string; value: number }[];
   }[] = [{ name: 'Loss', series: [] }];
+  public error: string = null;
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
     text: model => model && model.name
   };
   public modelName: string = null;
+  public models: Model[] = [];
   public url: string = null;
 
   private $model: BehaviorSubject<Model> = new BehaviorSubject(null);
   private subscriptions: Subscription[] = [];
 
-  constructor(private modelService: ModelService) {
-    this.$models = this.modelService.models().pipe(map(result => result.data));
-  }
+  constructor(private modelService: ModelService) {}
 
   ngOnInit() {
     this.subscriptions.push(
@@ -41,9 +40,25 @@ export class AppComponent {
         )
         .subscribe(result => (this.model = result.data))
     );
+
+    this.subscriptions.push(
+      this.modelService
+        .models()
+        .subscribe(result => (this.models = result.data))
+    );
   }
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  public onChangeName() {
+    const modelNames = this.models.map(model => model.name);
+
+    if (modelNames.indexOf(this.modelName) >= 0) {
+      this.error = 'Name already exists!';
+    } else {
+      this.error = null;
+    }
   }
 
   public onClickCreateNewButton() {

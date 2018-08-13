@@ -9,10 +9,10 @@
   </header>
   <div class="content-container">
     <div class="content-area">
-      <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="$models | async"></dropdown>
+      <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="models"></dropdown>
       <div>
-        <input clrInput placeholder="Model name" [(ngModel)]="modelName" />
-        <button-cmp (click)="onClickCreateNewButton()" [disabled]="!modelName" iconShape="plus" label="Create New"></button-cmp>
+        <input-cmp [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
+        <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName" iconShape="plus" label="Create New"></button-cmp>
       </div>
       <div>
         <input clrInput placeholder="Url" [(ngModel)]="url" />
