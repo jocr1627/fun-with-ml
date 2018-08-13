@@ -36,7 +36,8 @@
               <input-cmp placeholder="CSS Selector" [(value)]="selector"></input-cmp>
             </div>
             <div class="form-col">
-              <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url" label="Train"></button-cmp>
+              <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || (trainingJob && trainingJob.status != JobStatus.DONE)"
+                label="Train"></button-cmp>
             </div>
             <div class="url-list">
               <div *ngFor="let url of model && model.urls" class="url">{{ url }}</div>
@@ -70,7 +71,8 @@
                 <input-cmp placeholder="Temperature" [type]="InputType.Number" [(value)]="temperature"></input-cmp>
               </div>
             </div>
-            <button-cmp (click)="onClickGenerateButton()" [disabled]="!model" label="Generate"></button-cmp>
+            <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || (generateJob && generateJob.status != JobStatus.DONE)"
+              label="Generate"></button-cmp>
           </div>
           <div class="content-section text-box">
             <div *ngIf="generateJob && generateJob.status == JobStatus.PENDING" class="spinner-container">
