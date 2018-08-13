@@ -14,7 +14,8 @@
           <div class="form-section">
             <div class="form-col">
               <label>Model</label>
-              <dropdown [accessors]="modelAccessors" [disabled]="isJobInProgress" [(selectedValue)]="model" [values]="models"></dropdown>
+              <dropdown [accessors]="modelAccessors" [disabled]="isJobInProgress" [(selectedValue)]="model" (selectedValueChange)="onChangeModel()"
+                [values]="models"></dropdown>
             </div>
             <div class="form-row">
               <input-cmp [disabled]="isJobInProgress" [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>

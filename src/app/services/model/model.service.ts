@@ -4,21 +4,25 @@ import { ApolloQueryResult } from 'apollo-client';
 import {
   CreateModelInput,
   GenerateJob,
+  GenerateJobInput,
   GenerateTextFromModelInput,
   Model,
   ModelInput,
   TrainingJob,
+  TrainingJobInput,
   TrainModelInput
 } from 'fun-with-ml-schema';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TypedFetchResult } from '../typed-fetch-result';
 import {
+  BatchCompletedTag,
   CreateModelTag,
   GenerateJobTag,
   GenerateTextFromModelTag,
   ModelTag,
   ModelsTag,
+  TextGeneratedTag,
   TrainingJobTag,
   TrainModelTag
 } from './gql-tags';
@@ -28,6 +32,42 @@ import {
 })
 export class ModelService {
   constructor(private apollo: Apollo) {}
+
+  public batchCompleted(
+    input: TrainingJobInput
+  ): Observable<ApolloQueryResult<TrainingJob>> {
+    const queryRef = this.apollo.watchQuery({
+      query: TrainingJobTag,
+      variables: { input }
+    });
+
+    queryRef.subscribeToMore({
+      document: BatchCompletedTag,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (
+          !subscriptionData.data ||
+          subscriptionData.data.batchCompleted.id !== input.id
+        ) {
+          return prev;
+        }
+
+        const trainingJob = subscriptionData.data.batchCompleted;
+
+        return {
+          trainingJob
+        };
+      }
+    });
+
+    return queryRef.valueChanges.pipe(
+      map(result => {
+        const { data } = result;
+        const { trainingJob } = data as any;
+
+        return { ...result, data: trainingJob };
+      })
+    );
+  }
 
   public createModel(
     input: CreateModelInput
@@ -50,36 +90,20 @@ export class ModelService {
 
   public generateTextFromModel(
     input: GenerateTextFromModelInput
-  ): Observable<ApolloQueryResult<GenerateJob>> {
-    const queryRef = this.apollo.watchQuery({
-      query: GenerateJobTag,
-      variables: { input: { id: input.id } }
-    });
-
-    queryRef.subscribeToMore({
-      document: GenerateTextFromModelTag,
-      variables: { input },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) {
-          return prev;
-        }
-
-        const generateJob = subscriptionData.data.generateTextFromModel;
-
-        return {
-          generateJob
-        };
-      }
-    });
-
-    return queryRef.valueChanges.pipe(
-      map(result => {
-        const { data } = result;
-        const { generateJob } = data as any;
-
-        return { ...result, data: generateJob };
+  ): Observable<TypedFetchResult<GenerateJob>> {
+    return this.apollo
+      .mutate({
+        mutation: GenerateTextFromModelTag,
+        variables: { input }
       })
-    );
+      .pipe(
+        map(result => {
+          const { data } = result;
+          const { generateTextFromModel } = data as any;
+
+          return { ...result, data: generateTextFromModel };
+        })
+      );
   }
 
   public model(input: ModelInput): Observable<ApolloQueryResult<Model>> {
@@ -113,26 +137,28 @@ export class ModelService {
       );
   }
 
-  public trainModel(
-    input: TrainModelInput
-  ): Observable<ApolloQueryResult<TrainingJob>> {
+  public textGenerated(
+    input: GenerateJobInput
+  ): Observable<ApolloQueryResult<GenerateJob>> {
     const queryRef = this.apollo.watchQuery({
-      query: TrainingJobTag,
-      variables: { input: { id: input.id } }
+      query: GenerateJobTag,
+      variables: { input }
     });
 
     queryRef.subscribeToMore({
-      document: TrainModelTag,
-      variables: { input },
+      document: TextGeneratedTag,
       updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) {
+        if (
+          !subscriptionData.data ||
+          subscriptionData.data.textGenerated.id !== input.id
+        ) {
           return prev;
         }
 
-        const trainingJob = subscriptionData.data.trainModel;
+        const generateJob = subscriptionData.data.textGenerated;
 
         return {
-          trainingJob
+          generateJob
         };
       }
     });
@@ -140,10 +166,31 @@ export class ModelService {
     return queryRef.valueChanges.pipe(
       map(result => {
         const { data } = result;
-        const { trainingJob } = data as any;
+        const { generateJob } = data as any;
 
-        return { ...result, data: trainingJob };
+        return { ...result, data: generateJob };
       })
     );
+  }
+
+  public trainModel(
+    input: TrainModelInput
+  ): Observable<TypedFetchResult<TrainingJob>> {
+    return this.apollo
+      .mutate({
+        mutation: TrainModelTag,
+        refetchQueries: [
+          { query: ModelTag, variables: { input: { id: input.id } } }
+        ],
+        variables: { input }
+      })
+      .pipe(
+        map(result => {
+          const { data } = result;
+          const { trainModel } = data as any;
+
+          return { ...result, data: trainModel };
+        })
+      );
   }
 }

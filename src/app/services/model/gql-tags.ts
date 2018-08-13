@@ -1,5 +1,17 @@
 import gql from 'graphql-tag';
 
+export const BatchCompletedTag = gql(`
+  subscription BatchCompleted {
+    batchCompleted {
+      batch
+      epoch
+      id
+      loss
+      status
+    }
+  }
+`);
+
 export const CreateModelTag = gql(`
   mutation CreateModel($input: CreateModelInput!) {
     createModel(input: $input) {
@@ -21,7 +33,7 @@ export const GenerateJobTag = gql(`
 `);
 
 export const GenerateTextFromModelTag = gql(`
-  subscription GenerateTextFromModel($input: GenerateTextFromModelInput!) {
+  mutation GenerateTextFromModel($input: GenerateTextFromModelInput!) {
     generateTextFromModel(input: $input) {
       id
       status
@@ -50,6 +62,16 @@ export const ModelsTag = gql(`
   }
 `);
 
+export const TextGeneratedTag = gql(`
+  subscription TextGenerated {
+    textGenerated {
+      id
+      status
+      text
+    }
+  }
+`);
+
 export const TrainingJobTag = gql(`
   query TrainingJob($input: TrainingJobInput!) {
     trainingJob(input: $input) {
@@ -63,7 +85,7 @@ export const TrainingJobTag = gql(`
 `);
 
 export const TrainModelTag = gql(`
-  subscription TrainModel($input: TrainModelInput!) {
+  mutation TrainModel($input: TrainModelInput!) {
     trainModel(input: $input) {
       batch
       epoch

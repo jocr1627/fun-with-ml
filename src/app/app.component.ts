@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { JobStatus, Model, TrainingJob } from 'fun-with-ml-schema';
+import { JobStatus, Model } from 'fun-with-ml-schema';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, flatMap } from 'rxjs/operators';
 import { DropdownValueAccessors, InputType } from './components';
@@ -33,18 +33,18 @@ export class AppComponent {
   public temperature: number = 0.5;
   public url: string = 'https://en.wikipedia.org/wiki/Structured_prediction';
 
-  private $model: BehaviorSubject<Model> = new BehaviorSubject(null);
+  private $modelId: BehaviorSubject<string> = new BehaviorSubject(null);
   private subscriptions: Subscription[] = [];
 
   constructor(private modelService: ModelService) {}
 
   ngOnInit() {
     this.subscriptions.push(
-      this.$model
+      this.$modelId
         .asObservable()
         .pipe(
-          filter(model => Boolean(model)),
-          flatMap(model => this.modelService.model({ id: model.id }))
+          filter(modelId => modelId !== null),
+          flatMap(modelId => this.modelService.model({ id: modelId }))
         )
         .subscribe(result => (this.model = result.data))
     );
@@ -54,9 +54,59 @@ export class AppComponent {
         .models()
         .subscribe(result => (this.models = result.data))
     );
+
+    this.subscriptions.push(
+      this.$modelId
+        .pipe(
+          filter(modelId => modelId !== null),
+          flatMap(
+            modelId => this.modelService.batchCompleted({ id: modelId }),
+            (_, result) => result
+          ),
+          filter(result => Boolean(result.data))
+        )
+        .subscribe(result => {
+          const { batch, epoch, loss, status } = result.data;
+
+          this.isJobInProgress = status !== JobStatus.DONE;
+
+          if (status === JobStatus.ACTIVE) {
+            const entry = this.chartData[epoch];
+            const series = entry ? entry.series : [];
+
+            series.push({ name: batch.toString(), value: loss });
+            this.chartData = [...this.chartData];
+            this.chartData[epoch] = { name: `Epoch ${epoch}`, series };
+          }
+        })
+    );
+
+    this.subscriptions.push(
+      this.$modelId
+        .pipe(
+          filter(modelId => modelId !== null),
+          flatMap(
+            modelId => this.modelService.textGenerated({ id: modelId }),
+            (_, result) => result
+          ),
+          filter(result => Boolean(result.data))
+        )
+        .subscribe(result => {
+          this.isJobInProgress =
+            result.data && result.data.status !== JobStatus.DONE;
+
+          this.generatedText = result.data
+            ? result.data.text
+            : this.generatedText;
+        })
+    );
   }
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  public onChangeModel() {
+    this.$modelId.next(this.model.id);
   }
 
   public onChangeName() {
@@ -73,7 +123,7 @@ export class AppComponent {
     this.subscriptions.push(
       this.modelService
         .createModel({ name: this.modelName })
-        .subscribe(result => this.$model.next(result.data))
+        .subscribe(result => this.$modelId.next(result.data && result.data.id))
     );
 
     this.modelName = null;
@@ -91,14 +141,7 @@ export class AppComponent {
           prefix: this.prefix,
           temperature: this.temperature
         })
-        .subscribe(result => {
-          this.isJobInProgress =
-            result.data && result.data.status !== JobStatus.DONE;
-
-          this.generatedText = result.data
-            ? result.data.text
-            : this.generatedText;
-        })
+        .subscribe()
     );
   }
 
@@ -134,25 +177,7 @@ export class AppComponent {
           selectors: [this.selector],
           url: this.url
         })
-        .subscribe(result => {
-          this.isJobInProgress =
-            result.data && result.data.status !== JobStatus.DONE;
-
-          if (!result.data) {
-            return;
-          }
-
-          const { batch, epoch, loss, status } = result.data;
-
-          if (status === JobStatus.ACTIVE) {
-            const entry = this.chartData[epoch];
-            const series = entry ? entry.series : [];
-
-            series[batch] = { name: batch.toString(), value: loss };
-            this.chartData = [...this.chartData];
-            this.chartData[epoch] = { name: `Epoch ${epoch}`, series };
-          }
-        })
+        .subscribe()
     );
     this.url = null;
   }
