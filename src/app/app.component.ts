@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Model } from 'fun-with-ml-schema';
+import { Model, TrainingJob } from 'fun-with-ml-schema';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DropdownValueAccessors } from './components';
@@ -12,11 +12,13 @@ import { ModelService } from './services';
 })
 export class AppComponent {
   public $models: Observable<Model[]> = null;
+  public $trainingJob: Observable<TrainingJob> = null;
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
     text: model => model && model.name
   };
   public modelName: string = null;
+  public url: string = null;
 
   private subscriptions: Subscription[] = [];
 
@@ -28,7 +30,7 @@ export class AppComponent {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  public onClickCreateModel() {
+  public onClickCreateNewButton() {
     this.subscriptions.push(
       this.modelService
         .createModel({ name: this.modelName })
@@ -36,5 +38,15 @@ export class AppComponent {
           this.model = result.data;
         })
     );
+  }
+
+  public onClickTrainButton() {
+    this.$trainingJob = this.modelService
+      .trainModel({
+        force: true,
+        id: this.model.id,
+        url: this.url
+      })
+      .pipe(map(result => result.data));
   }
 }

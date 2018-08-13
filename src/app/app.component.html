@@ -11,7 +11,9 @@
     <div class="content-area">
       <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="$models | async"></dropdown>
       <input clrInput placeholder="Model name" [(ngModel)]="modelName" />
-      <button-cmp (click)="onClickCreateModel()" [disabled]="!modelName" iconShape="plus" label="Create Model"></button-cmp>
+      <button-cmp (click)="onClickCreateNewButton()" [disabled]="!modelName" iconShape="plus" label="Create New"></button-cmp>
+      <input clrInput placeholder="Url" [(ngModel)]="url" />
+      <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url" label="Train"></button-cmp>
     </div>
   </div>
 </div>

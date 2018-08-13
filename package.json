@@ -29,11 +29,13 @@
     "apollo-cache-inmemory": "^1.2.7",
     "apollo-client": "^2.3.8",
     "apollo-link": "^1.2.2",
+    "apollo-link-ws": "^1.0.8",
     "core-js": "^2.5.4",
     "fun-with-ml-schema": "file:../fun-with-ml-schema",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "rxjs": "^6.0.0",
+    "subscriptions-transport-ws": "^0.9.14",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
