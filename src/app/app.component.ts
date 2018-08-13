@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Model, TrainingJob } from 'fun-with-ml-schema';
+import { JobStatus, Model, TrainingJob } from 'fun-with-ml-schema';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, flatMap } from 'rxjs/operators';
 import { DropdownValueAccessors, InputType } from './components';
@@ -20,6 +20,7 @@ export class AppComponent {
   public error: string = null;
   public generatedText: string[] = [];
   public InputType = InputType;
+  public isJobInProgress: boolean = false;
   public maxLength: number = 100;
   public model: Model = null;
   public modelAccessors: DropdownValueAccessors<Model> = {
@@ -30,7 +31,6 @@ export class AppComponent {
   public prefix: string = '';
   public selector: string = 'body';
   public temperature: number = 0.5;
-  public trainingJob: TrainingJob = null;
   public url: string = 'https://en.wikipedia.org/wiki/Structured_prediction';
 
   private $model: BehaviorSubject<Model> = new BehaviorSubject(null);
@@ -80,6 +80,8 @@ export class AppComponent {
   }
 
   public onClickGenerateButton() {
+    this.isJobInProgress = true;
+
     this.subscriptions.push(
       this.modelService
         .generateTextFromModel({
@@ -89,12 +91,14 @@ export class AppComponent {
           prefix: this.prefix,
           temperature: this.temperature
         })
-        .subscribe(
-          result =>
-            (this.generatedText = result.data
-              ? result.data.text
-              : this.generatedText)
-        )
+        .subscribe(result => {
+          this.isJobInProgress =
+            result.data && result.data.status !== JobStatus.DONE;
+
+          this.generatedText = result.data
+            ? result.data.text
+            : this.generatedText;
+        })
     );
   }
 
@@ -119,6 +123,7 @@ export class AppComponent {
     }
 
     this.chartData = [];
+    this.isJobInProgress = true;
 
     this.subscriptions.push(
       this.modelService
@@ -130,23 +135,22 @@ export class AppComponent {
           url: this.url
         })
         .subscribe(result => {
-          this.trainingJob = result.data;
+          this.isJobInProgress =
+            result.data && result.data.status !== JobStatus.DONE;
 
-          const { batch = null, epoch = null, loss = null } =
-            this.trainingJob || {};
+          if (!result.data) {
+            return;
+          }
 
-          if (batch !== null && epoch !== null) {
+          const { batch, epoch, loss, status } = result.data;
+
+          if (status === JobStatus.ACTIVE) {
             const entry = this.chartData[epoch];
             const series = entry ? entry.series : [];
 
+            series[batch] = { name: batch.toString(), value: loss };
             this.chartData = [...this.chartData];
-            this.chartData[epoch] = {
-              name: `Epoch ${epoch}`,
-              series: series.concat({
-                name: batch.toString(),
-                value: loss
-              })
-            };
+            this.chartData[epoch] = { name: `Epoch ${epoch}`, series };
           }
         })
     );

@@ -92,13 +92,23 @@ line-chart {
   overflow: auto;
 }
 
-.url-list {
+.url-list-container {
   flex: 1;
 
-  .list-group {
+  .url-list {
     flex: 1;
     height: 0;
     overflow: auto;
     width: 14rem;
+
+    .url {
+      align-items: center;
+      display: flex;
+      height: 1.5rem;
+
+      &:not(:last-of-type) {
+        border-bottom: 0.05rem solid #ccc;
+      }
+    }
   }
 }

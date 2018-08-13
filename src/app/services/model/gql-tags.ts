@@ -14,6 +14,7 @@ export const GenerateJobTag = gql(`
   query GenerateJob($input: GenerateJobInput!) {
     generateJob(input: $input) {
       id
+      status
       text
     }
   }
@@ -23,6 +24,7 @@ export const GenerateTextFromModelTag = gql(`
   subscription GenerateTextFromModel($input: GenerateTextFromModelInput!) {
     generateTextFromModel(input: $input) {
       id
+      status
       text
     }
   }
@@ -55,6 +57,7 @@ export const TrainingJobTag = gql(`
       epoch
       id
       loss
+      status
     }
   }
 `);
@@ -66,6 +69,7 @@ export const TrainModelTag = gql(`
       epoch
       id
       loss
+      status
     }
   }
 `);
