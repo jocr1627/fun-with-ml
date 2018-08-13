@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { ApolloQueryResult } from 'apollo-client';
 import { JobStatus, Model } from 'fun-with-ml-schema';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { filter, flatMap } from 'rxjs/operators';
+import { BehaviorSubject, of, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { DropdownValueAccessors, InputType } from './components';
 import { ModelService } from './services';
 
@@ -14,7 +15,7 @@ export class AppComponent {
   public chartData: {
     name: string;
     series: { name: string; value: number }[];
-  }[] = [{ name: 'Loss', series: [] }];
+  }[] = [];
   public count: number = 1;
   public epochs: number = 1;
   public error: string = null;
@@ -43,10 +44,17 @@ export class AppComponent {
       this.$modelId
         .asObservable()
         .pipe(
-          filter(modelId => modelId !== null),
-          flatMap(modelId => this.modelService.model({ id: modelId }))
+          switchMap(modelId => {
+            if (modelId === null) {
+              return of(null);
+            }
+
+            return this.modelService.model({ id: modelId });
+          })
         )
-        .subscribe(result => (this.model = result.data))
+        .subscribe(result => {
+          this.model = result && (result as ApolloQueryResult<Model>).data;
+        })
     );
 
     this.subscriptions.push(
@@ -58,14 +66,20 @@ export class AppComponent {
     this.subscriptions.push(
       this.$modelId
         .pipe(
-          filter(modelId => modelId !== null),
-          flatMap(
-            modelId => this.modelService.batchCompleted({ id: modelId }),
-            (_, result) => result
-          ),
-          filter(result => Boolean(result.data))
+          switchMap(modelId => {
+            if (modelId === null) {
+              return of(null);
+            }
+
+            return this.modelService.batchCompleted({ id: modelId });
+          })
         )
         .subscribe(result => {
+          if (!result || !result.data) {
+            this.chartData = [];
+            return;
+          }
+
           const { batch, epoch, loss, status } = result.data;
 
           this.isJobInProgress = status !== JobStatus.DONE;
@@ -84,20 +98,24 @@ export class AppComponent {
     this.subscriptions.push(
       this.$modelId
         .pipe(
-          filter(modelId => modelId !== null),
-          flatMap(
-            modelId => this.modelService.textGenerated({ id: modelId }),
-            (_, result) => result
-          ),
-          filter(result => Boolean(result.data))
+          switchMap(modelId => {
+            if (modelId === null) {
+              return of(null);
+            }
+
+            return this.modelService.textGenerated({ id: modelId });
+          })
         )
         .subscribe(result => {
-          this.isJobInProgress =
-            result.data && result.data.status !== JobStatus.DONE;
+          if (!result || !result.data) {
+            this.generatedText = [];
+            return;
+          }
 
-          this.generatedText = result.data
-            ? result.data.text
-            : this.generatedText;
+          const { status, text } = result.data;
+
+          this.isJobInProgress = status !== JobStatus.DONE;
+          this.generatedText = text;
         })
     );
   }
@@ -179,6 +197,5 @@ export class AppComponent {
         })
         .subscribe()
     );
-    this.url = null;
   }
 }

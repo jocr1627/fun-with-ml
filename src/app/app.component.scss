@@ -19,6 +19,28 @@
   }
 }
 
+.content-section {
+  background-color: white;
+  border: 0.05rem solid #cccccc;
+  border-radius: 0.15rem;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 0.5rem;
+
+  & > * {
+    margin-bottom: 0.6rem;
+  }
+
+  & > *:last-child {
+    margin-bottom: 0.2rem;
+  }
+
+  &:not(:last-of-type) {
+    margin-bottom: 0.5rem;
+  }
+}
+
 .form-col {
   display: flex;
   flex-direction: column;
@@ -34,27 +56,6 @@
 
   & > *:last-child {
     margin-right: 0;
-  }
-}
-
-.form-section {
-  background-color: white;
-  border: 0.05rem solid #cccccc;
-  border-radius: 0.15rem;
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem;
-
-  & > * {
-    margin-bottom: 0.6rem;
-  }
-
-  & > *:last-child {
-    margin-bottom: 0.2rem;
-  }
-
-  &:not(:last-of-type) {
-    margin-bottom: 0.5rem;
   }
 }
 
@@ -85,12 +86,7 @@ line-chart {
 }
 
 .text-box {
-  background-color: white;
-  border: 0.05rem solid #cccccc;
-  border-radius: 0.15rem;
-  flex: 1;
-  overflow: auto;
-  padding: 0.5rem;
+  height: 15rem;
 }
 
 .url-list-container {
