@@ -41,9 +41,9 @@ export class ModelService {
       .pipe(
         map(result => {
           const { data } = result;
-          const { models } = data as any;
+          const { createModel } = data as any;
 
-          return { ...result, data: models };
+          return { ...result, data: createModel };
         })
       );
   }
