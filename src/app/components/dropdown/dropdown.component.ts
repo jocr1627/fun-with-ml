@@ -10,6 +10,8 @@ export class DropdownComponent<T> {
   @Input()
   accessors: DropdownValueAccessors<T> = {};
   @Input()
+  disabled: boolean = false;
+  @Input()
   selectedValue: T = null;
   @Input()
   values: T[] = [];

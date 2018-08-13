@@ -9,18 +9,18 @@
   </header>
   <div class="content-container">
     <div class="content-area">
-      <dropdown [accessors]="modelAccessors" [(selectedValue)]="model" [values]="models"></dropdown>
+      <dropdown [accessors]="modelAccessors" [disabled]="trainingJob" [(selectedValue)]="model" [values]="models"></dropdown>
       <div>
-        <input-cmp [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
-        <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName" iconShape="plus" label="Create New"></button-cmp>
+        <input-cmp [disabled]="trainingJob" [error]="error" placeholder="Model name" [(value)]="modelName" (valueChange)="onChangeName()"></input-cmp>
+        <button-cmp (click)="onClickCreateNewButton()" [disabled]="error || !modelName || trainingJob" iconShape="plus" label="Create New"></button-cmp>
       </div>
       <div>
-        <input clrInput placeholder="Url" [(ngModel)]="url" />
-        <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url" label="Train"></button-cmp>
+        <input clrInput [disabled]="trainingJob" placeholder="Url" [(ngModel)]="url" />
+        <button-cmp (click)="onClickTrainButton()" [disabled]="!model || !url || trainingJob" label="Train"></button-cmp>
       </div>
       <div>
         <textarea clrTextarea [ngModel]="$generatedText | async" readonly></textarea>
-        <button-cmp (click)="onClickGenerateButton()" [disabled]="!model" label="Generate"></button-cmp>
+        <button-cmp (click)="onClickGenerateButton()" [disabled]="!model || trainingJob" label="Generate"></button-cmp>
       </div>
       <ul class="list-group list-group-flush">
         <li *ngFor="let url of $urls" class="list-group-item">{{ url }}</li>

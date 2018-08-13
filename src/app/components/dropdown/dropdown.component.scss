@@ -11,6 +11,10 @@ button {
       box-shadow: none;
     }
   }
+
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 
 clr-dropdown-menu {

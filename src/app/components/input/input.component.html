@@ -1,6 +1,6 @@
 <div class="input-container" [class.error]="error">
   <clr-icon *ngIf="iconShape" [attr.shape]="iconShape"></clr-icon>
-  <input [autofocus]="autoFocus" (blur)="blur.emit($event)" class="input" [class.input-with-icon]="iconShape" [placeholder]="placeholder"
-    [readonly]="readOnly" [type]="type" [ngModel]="value" (ngModelChange)="onChange($event)">
+  <input [autofocus]="autoFocus" (blur)="blur.emit($event)" class="input" [class.input-with-icon]="iconShape" [disabled]="disabled"
+    [placeholder]="placeholder" [readonly]="readOnly" [type]="type" [ngModel]="value" (ngModelChange)="onChange($event)">
 </div>
 <div class="error">{{ error }}</div>

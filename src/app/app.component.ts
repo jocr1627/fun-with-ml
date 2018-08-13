@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Model } from 'fun-with-ml-schema';
+import { Model, TrainingJob } from 'fun-with-ml-schema';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { filter, flatMap, map } from 'rxjs/operators';
 import { DropdownValueAccessors } from './components';
@@ -23,6 +23,7 @@ export class AppComponent {
   };
   public modelName: string = null;
   public models: Model[] = [];
+  public trainingJob: TrainingJob = null;
   public url: string = null;
 
   private $model: BehaviorSubject<Model> = new BehaviorSubject(null);
@@ -86,6 +87,8 @@ export class AppComponent {
           url: this.url
         })
         .subscribe(result => {
+          this.trainingJob = result.data;
+
           if (result.data && result.data.batch !== null) {
             this.chartData = [
               {

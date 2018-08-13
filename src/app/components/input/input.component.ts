@@ -27,6 +27,8 @@ export class InputComponent<T> {
   @Input()
   error: string = null;
   @Input()
+  disabled: boolean = false;
+  @Input()
   iconShape: string = null;
   @Input()
   placeholder: string = '';
